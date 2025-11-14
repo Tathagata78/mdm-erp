@@ -1,5 +1,6 @@
 import AdvancedFilter from "./_components/advanced-filter";
 import DateRangePicker from "./_components/date-range-picker";
+import DataTableWithExport from "./_components/data-table";
 function page() {
   return (
     <div className="flex flex-1 flex-col">
@@ -41,7 +42,9 @@ function page() {
             </div>
           </div> */}
           {/* <ChartTableSync /> */}
+            <DataTableWithExport />
         </div>
+
       </div>
     </div>
   );
