@@ -166,6 +166,7 @@
 "use client";
 
 import { BarChart, Bar, XAxis } from "recharts";
+import { ZoomIn } from "lucide-react";
 import { motion } from "framer-motion";
 
 import {
@@ -191,6 +192,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@workspace/ui/components/chart";
+import { Button } from "@workspace/ui/components/button";
 
 type LeadsCardProps = {
   leadsChartConfig: any;
@@ -207,17 +209,20 @@ export function LeadsCardModal({
     <Dialog>
       {/* CARD */}
       <Card>
-        <CardHeader className="flex items-center justify-between gap-2">
+        <CardHeader className="flex items-center justify-between pr-2">
           <div>
             <CardTitle>New Leads</CardTitle>
             <CardDescription>Last Month</CardDescription>
           </div>
 
           {/* EXPAND BUTTON */}
-          <DialogTrigger asChild>
-            <button className="text-xs font-medium text-primary underline-offset-4 hover:underline">
+          <DialogTrigger asChild className="p-0">
+            {/* <button className="text-xs font-medium text-primary underline-offset-4 hover:underline">
               expand
-            </button>
+            </button> */}
+            <Button variant={"ghost"} className="cursor-pointer">
+              <ZoomIn />
+            </Button>
           </DialogTrigger>
         </CardHeader>
 
@@ -271,7 +276,7 @@ export function LeadsCardModal({
       </Card>
 
       {/* MODAL CONTENT */}
-      <DialogContent className="max-w-3xl w-[90vw]">
+      <DialogContent className="bg-accent min-w-fit">
         <DialogHeader>
           <DialogTitle>New Leads — Detailed View</DialogTitle>
           <DialogDescription>
@@ -281,11 +286,12 @@ export function LeadsCardModal({
 
         {/* ANIMATED EXPANDED CHART */}
         <motion.div
-          className="mt-4 h-[320px]"
-          initial={{ opacity: 0, scale: 0.96, y: 8 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.96, y: 8 }}
+          className="mt-0 h-[320px]"
+          initial={{ opacity: 0, scale: 0.94, x: 0 }}
+          animate={{ opacity: 1, scale: 1, x: 0 }}
+          exit={{ opacity: 0, scale: 0.94, x: 0 }}
           transition={{ duration: 0.18, ease: "easeOut" }}
+          style={{ transformOrigin: "center center" }}
         >
           <ChartContainer className="size-full" config={leadsChartConfig}>
             <BarChart accessibilityLayer data={leadsChartData} barSize={16}>
@@ -315,7 +321,7 @@ export function LeadsCardModal({
         </motion.div>
 
         {/* SUMMARY GRID */}
-        <div className="mt-4 grid grid-cols-3 gap-4 text-sm">
+        <div className="mt-4 w-full grid grid-cols-3 gap-4 text-sm items-center text-center">
           <div>
             <p className="text-xs text-muted-foreground">Total leads</p>
             <p className="text-lg font-semibold">635</p>
