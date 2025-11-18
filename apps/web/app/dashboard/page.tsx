@@ -1,7 +1,7 @@
 import AdvancedFilter from "./_components/advanced-filter";
 import DateRangePicker from "./_components/date-range-picker";
 import DataTableWithExport from "./_components/data-table";
-import MultiCards from "@/components/multi-cards";
+import { MyGradePage } from "@/components/multi-cards";
 import { OverviewCards } from "./_components/overview-card";
 import { InsightCards } from "./_components/insight-cards";
 import { LeadsCardModal } from "./_components/expandcard";
@@ -55,8 +55,8 @@ function page() {
           </div> */}
           {/* <AdvancedChartTableSync /> */}
           <div className="grid grid-cols-1 gap-2 *:data-[slot=card]:shadow-xs sm:grid-cols-2 xl:grid-cols-5">
-            <div className="aspect-video col-span-1 xl:col-span-2 bg-accent-foreground">
-              <MultiCards />
+            <div className="aspect-video col-span-1 xl:col-span-2 ">
+              <MyGradePage />
             </div>
             <div className="aspect-auto col-span-1 xl:col-span-3">
               <DataTableWithExport />
