@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { DownloadIcon, FileTextIcon, FileSpreadsheetIcon } from "lucide-react";
 
+// import z from "zod"
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 
@@ -22,6 +23,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+// Note: Ensure these paths match your project structure
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Checkbox } from "@workspace/ui/components/checkbox";
@@ -43,7 +45,9 @@ import {
 } from "@workspace/ui/components/table";
 
 import { cn } from "@workspace/ui/lib/utils";
-import { Card, CardContent,CardHeader} from "@workspace/ui/components/card";
+import { Card, CardContent, CardHeader } from "@workspace/ui/components/card";
+import { Popover, PopoverTrigger, PopoverContent } from "@workspace/ui/components/popover";
+import ChartWithDetails from "@/components/chart-with-details"
 
 const data: Payment[] = [
   {
@@ -139,7 +143,7 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("name")}</div>
+      <TableCellViewer name={row.getValue("name")} />
     ),
   },
   {
@@ -160,7 +164,7 @@ export const columns: ColumnDef<Payment>[] = [
       return (
         <Badge
           className={
-            (cn("rounded-full border-none focus-visible:outline-none"), styles)
+            cn("rounded-full border-none focus-visible:outline-none", styles)
           }
         >
           {row.getValue("status")}
@@ -300,105 +304,117 @@ const DataTableWithExport = () => {
 
   return (
     <Card className="pb-0  gap-0 pt-4">
-        <CardHeader className="">
-          <div className="flex justify-between gap-2 max-sm:flex-col sm:items-center">
-            <div className="flex items-center space-x-2">
-              <Input
-                placeholder="Search all columns..."
-                value={globalFilter ?? ""}
-                onChange={(event) =>
-                  setGlobalFilter(String(event.target.value))
-                }
-                className="max-w-sm"
-              />
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="text-muted-foreground text-sm">
-                {table.getSelectedRowModel().rows.length > 0 && (
-                  <span className="mr-2">
-                    {table.getSelectedRowModel().rows.length} of{" "}
-                    {table.getFilteredRowModel().rows.length} row(s) selected
-                  </span>
-                )}
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <DownloadIcon className="mr-2 h-4 w-4" />
-                    Export
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={exportToCSV}>
-                    <FileTextIcon className="mr-2 h-4 w-4" />
-                    Export as CSV
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={exportToExcel}>
-                    <FileSpreadsheetIcon className="mr-2 h-4 w-4" />
-                    Export as Excel
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={exportToJSON}>
-                    <FileTextIcon className="mr-2 h-4 w-4" />
-                    Export as JSON
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+      <CardHeader className="">
+        <div className="flex justify-between gap-2 max-sm:flex-col sm:items-center">
+          <div className="flex items-center space-x-2">
+            <Input
+              placeholder="Search all columns..."
+              value={globalFilter ?? ""}
+              onChange={(event) =>
+                setGlobalFilter(String(event.target.value))
+              }
+              className="max-w-sm"
+            />
           </div>
-        </CardHeader>
-        <CardContent className="rounded-sm px-2 pb-2 mt-0 ">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
+          <div className="flex items-center space-x-2">
+            <div className="text-muted-foreground text-sm">
+              {table.getSelectedRowModel().rows.length > 0 && (
+                <span className="mr-2">
+                  {table.getSelectedRowModel().rows.length} of{" "}
+                  {table.getFilteredRowModel().rows.length} row(s) selected
+                </span>
               )}
-            </TableBody>
-          </Table>
-        </CardContent>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <DownloadIcon className="mr-2 h-4 w-4" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={exportToCSV}>
+                  <FileTextIcon className="mr-2 h-4 w-4" />
+                  Export as CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={exportToExcel}>
+                  <FileSpreadsheetIcon className="mr-2 h-4 w-4" />
+                  Export as Excel
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={exportToJSON}>
+                  <FileTextIcon className="mr-2 h-4 w-4" />
+                  Export as JSON
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="rounded-sm px-2 pb-2 mt-0 ">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </CardContent>
     </Card>
   );
 };
 
 export default DataTableWithExport;
+
+// FIX: Added the 'return' keyword here
+function TableCellViewer({ name }: { name: string }) {
+  return (
+    <Popover>
+      <PopoverTrigger>{name}</PopoverTrigger>
+      <PopoverContent className="w-full max-w-200">
+        <ChartWithDetails />
+      </PopoverContent>
+    </Popover>
+  );
+}
