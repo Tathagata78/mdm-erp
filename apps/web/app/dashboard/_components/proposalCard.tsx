@@ -44,13 +44,13 @@ export function ProposalsCardModal({
   return (
     <Dialog>
       <Card className="overflow-hidden">
-        <CardHeader className="flex items-center justify-between gap-2 pr-2">
+        <CardHeader className="flex items-center justify-between gap-2 px-2 pl-5">
           <div>
             <CardTitle>Proposals Sent</CardTitle>
             <CardDescription>Last Month</CardDescription>
           </div>
 
-          <DialogTrigger asChild className="p-0">
+          <DialogTrigger asChild>
             <Button variant={"ghost"} className="cursor-pointer">
               <ZoomIn />
             </Button>

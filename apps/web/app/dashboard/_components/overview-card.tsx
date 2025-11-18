@@ -39,11 +39,12 @@ import {
 
 import {LeadsCardModal} from "./expandcard";
 import { ProposalsCardModal } from "./proposalCard";
+import RevenueCard from "./revenueCard";
 const lastMonth = format(subMonths(new Date(), 1), "LLLL");
 
 export function OverviewCards() {
   return (
-    <div className="grid grid-cols-1 gap-2 *:data-[slot=card]:shadow-xs sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+    <div className="grid grid-cols-2 gap-2 *:data-[slot=card]:shadow-xs sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
       {/* <Card>
         <CardHeader>
           <CardTitle>New Leads</CardTitle>
@@ -153,7 +154,7 @@ export function OverviewCards() {
 
       <Card>
         <CardHeader>
-          <div className="w-fit rounded-lg bg-green-500/10 p-2">
+          <div className="w-fit rounded-lg bg-green-400/10 p-2">
             <Wallet className="size-5 text-green-500" />
           </div>
         </CardHeader>
@@ -163,15 +164,15 @@ export function OverviewCards() {
             <CardDescription>Last 6 Months</CardDescription>
           </div>
           <p className="text-2xl font-medium tabular-nums">$56,050</p>
-          <div className="w-fit rounded-md bg-green-500/10 px-2 py-1 text-xs font-medium text-green-500">
+          <div className="w-fit rounded-md bg-green-400/10 px-2 py-1 text-sm font-medium text-green-500">
             +22.2%
           </div>
         </CardContent>
       </Card>
 
-      <Card>
+      {/* <Card>
         <CardHeader>
-          <div className="bg-destructive/10 w-fit rounded-lg p-2">
+          <div className="bg-red-400/10 w-fit rounded-lg p-2">
             <BadgeDollarSign className="text-destructive size-5" />
           </div>
         </CardHeader>
@@ -181,13 +182,15 @@ export function OverviewCards() {
             <CardDescription>Last 6 Months</CardDescription>
           </div>
           <p className="text-2xl font-medium tabular-nums">136</p>
-          <div className="text-destructive bg-destructive/10 w-fit rounded-md px-2 py-1 text-xs font-medium">
+          <div className="text-destructive bg-red-400/10 w-fit rounded-md px-2 py-1 text-sm font-medium">
             -2.5%
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
-      <Card className="col-span-1 xl:col-span-2">
+      
+
+      {/* <Card className="col-span-1 xl:col-span-2">
         <CardHeader>
           <CardTitle>Revenue Growth</CardTitle>
           <CardDescription>Year to Date (YTD)</CardDescription>
@@ -228,7 +231,14 @@ export function OverviewCards() {
             +35% growth since last year
           </p>
         </CardFooter>
-      </Card>
+      </Card> */}
+      <RevenueCard
+        revenueChartConfig={revenueChartConfig}
+        revenueChartData={revenueChartData}
+        compareLabel="35% growth since last year"
+        total="₹1,560,000"
+        percentChange="+35%"
+      />
     </div>
   );
 }

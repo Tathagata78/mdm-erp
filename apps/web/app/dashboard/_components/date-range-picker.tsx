@@ -150,7 +150,7 @@ export default function DateRangePicker({
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className="w-[300px] justify-start text-left font-normal"
+            className="w-[260px] justify-center text-center font-normal"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {label}
@@ -158,7 +158,7 @@ export default function DateRangePicker({
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="w-[460px] p-0 rounded-xl shadow-md"
+          className="w-[460px] p-0 rounded-xl border border-gray-200 shadow-none bg-white/2 backdrop-blur-lg backdrop-saturate-200 ring-1 ring-white/6"
         >
           <div className="flex">
             {/* ---------------------- LEFT PRESETS ---------------------- */}
@@ -167,7 +167,7 @@ export default function DateRangePicker({
                 DATE RANGE
               </h4>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-0">
                 {presets.map((p) => {
                   const active =
                     draft?.from?.toDateString() ===
@@ -199,7 +199,7 @@ export default function DateRangePicker({
               </div>
             </div>
             {/* ---------------------- RIGHT: CALENDAR ---------------------- */}
-            <div className="p-3 w-[260px]">
+            <div className="p-1 w-[260px] py-0">
               <Calendar
                 mode="range"
                 selected={draft}
@@ -221,14 +221,14 @@ export default function DateRangePicker({
             </div>
           </div>
           {/* ---------------------- CUSTOM RANGE + BUTTONS ---------------------- */}
-          <div className="mt-2 px-4 py-3 border-t">
+          <div className="pl-4 pr-2 py-2 border-t">
             <h4 className="text-xs font-semibold text-muted-foreground tracking-wider">
               CUSTOM RANGE
             </h4>
 
-            <div className="flex justify-between items-end mt-2">
+            <div className="flex justify-between items-end mt-2 gap-2">
               {/* Inputs */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-1">
                 {/* Start */}
                 <div>
                   <Label className="text-xs">Start</Label>
@@ -284,6 +284,7 @@ export default function DateRangePicker({
                   Cancel
                 </Button>
                 <Button
+                  className="cursor-pointer"
                   onClick={() => {
                     setCommitted(draft);
                     setOpen(false);

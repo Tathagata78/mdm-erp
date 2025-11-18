@@ -46,13 +46,12 @@ export function InsightCards() {
         <CardHeader>
           <CardTitle>Leads by Source</CardTitle>
         </CardHeader>
-        <CardContent className="max-h-48">
+        <CardContent className="max-h-48 pr-6">
           <ChartContainer
             config={leadsBySourceChartConfig}
             className="size-full"
           >
             <PieChart
-              className="m-0"
               margin={{
                 top: 0,
                 right: 0,
@@ -68,10 +67,10 @@ export function InsightCards() {
                 data={leadsBySourceChartData}
                 dataKey="leads"
                 nameKey="source"
-                innerRadius={65}
-                outerRadius={90}
+                innerRadius={55}
+                outerRadius={70}
                 paddingAngle={2}
-                cornerRadius={4}
+                cornerRadius={6}
               >
                 <Label
                   content={({ viewBox }) => {
@@ -206,8 +205,8 @@ export function InsightCards() {
           </ChartContainer>
         </CardContent>
         <CardFooter>
-          <p className="text-muted-foreground text-xs">
-            Average progress: 78% · 2 projects above target
+          <p className="text-muted-foreground text-xs px-1">
+            Average progress: 78% <br/>2 projects above target
           </p>
         </CardFooter>
       </Card>
