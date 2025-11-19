@@ -410,11 +410,8 @@ export default DataTableWithExport;
 // FIX: Added the 'return' keyword here
 function TableCellViewer({ name }: { name: string }) {
   return (
-    <Popover>
-      <PopoverTrigger>{name}</PopoverTrigger>
-      <PopoverContent className="w-full max-w-200">
-        <ChartWithDetails />
-      </PopoverContent>
-    </Popover>
+    <ChartWithDetails className="dark:bg-accent">
+      <button className="cursor-pointer hover:underline">{name}</button>
+    </ChartWithDetails>
   );
 }
