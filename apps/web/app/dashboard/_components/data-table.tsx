@@ -46,8 +46,12 @@ import {
 
 import { cn } from "@workspace/ui/lib/utils";
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card";
-import { Popover, PopoverTrigger, PopoverContent } from "@workspace/ui/components/popover";
-import ChartWithDetails from "@/components/chart-with-details"
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@workspace/ui/components/popover";
+import ChartWithDetails from "@/components/chart-with-details";
 
 const data: Payment[] = [
   {
@@ -142,9 +146,7 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => (
-      <TableCellViewer name={row.getValue("name")} />
-    ),
+    cell: ({ row }) => <TableCellViewer name={row.getValue("name")} />,
   },
   {
     accessorKey: "status",
@@ -163,9 +165,10 @@ export const columns: ColumnDef<Payment>[] = [
 
       return (
         <Badge
-          className={
-            cn("rounded-full border-none focus-visible:outline-none", styles)
-          }
+          className={cn(
+            "rounded-full border-none focus-visible:outline-none",
+            styles
+          )}
         >
           {row.getValue("status")}
         </Badge>
@@ -310,9 +313,7 @@ const DataTableWithExport = () => {
             <Input
               placeholder="Search all columns..."
               value={globalFilter ?? ""}
-              onChange={(event) =>
-                setGlobalFilter(String(event.target.value))
-              }
+              onChange={(event) => setGlobalFilter(String(event.target.value))}
               className="max-w-sm"
             />
           </div>
@@ -362,9 +363,9 @@ const DataTableWithExport = () => {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   );
                 })}
@@ -410,11 +411,8 @@ export default DataTableWithExport;
 // FIX: Added the 'return' keyword here
 function TableCellViewer({ name }: { name: string }) {
   return (
-    <Popover>
-      <PopoverTrigger>{name}</PopoverTrigger>
-      <PopoverContent className="w-full max-w-200">
-        <ChartWithDetails />
-      </PopoverContent>
-    </Popover>
+    <ChartWithDetails className="dark:bg-accent">
+      <button className="cursor-pointer hover:underline">{name}</button>
+    </ChartWithDetails>
   );
 }
