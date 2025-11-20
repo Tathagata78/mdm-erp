@@ -5,7 +5,7 @@ import { MyGradePage } from "@/components/multi-cards";
 import { OverviewCards } from "./_components/overview-card";
 import { InsightCards } from "./_components/insight-cards";
 import { LeadsCardModal } from "./_components/expandcard";
-// import AdvancedChartTableSync from "./_components/table";
+import AdvancedChartTableSync from "./_components/table";
 import ChartWithDetails from "@/components/chart-with-details"
 const leadsChartConfig = {}; // Define leadsChartConfig with appropriate values
 const leadsChartData: Array<Record<string, any>> = []; // Initialize as an empty array or populate with appropriate data
@@ -53,7 +53,7 @@ function page() {
               8
             </div>
           </div> */}
-          {/* <AdvancedChartTableSync /> */}
+          <AdvancedChartTableSync />
           <div className="grid grid-cols-1 gap-2 *:data-[slot=card]:shadow-xs sm:grid-cols-2 xl:grid-cols-5">
             <div className="aspect-video col-span-1 xl:col-span-2 ">
               <MyGradePage data={[]} />

@@ -7,8 +7,8 @@ import {
   startOfDay,
   endOfDay,
 } from "date-fns";
-
-import { CalendarIcon} from "lucide-react";
+import { CalendarIcon } from "lucide-react";
+import { useQueryState, parseAsIsoDate } from "nuqs";
 
 import { cn } from "@workspace/ui/lib/utils";
 import { Button } from "@workspace/ui/components/button";
@@ -28,6 +28,7 @@ type Preset = {
   label: string;
   getRange: () => DateRange;
 };
+
 const presets: Preset[] = [
   {
     key: "D",
@@ -44,14 +45,6 @@ const presets: Preset[] = [
       const d = addDays(new Date(), -1);
       return { from: startOfDay(d), to: endOfDay(d) };
     },
-  },
-  {
-    key: "H",
-    label: "Last hour", // (Date-only UI — equivalent to "Today")
-    getRange: () => ({
-      from: new Date(),
-      to: new Date(),
-    }),
   },
   {
     key: "W",
@@ -86,13 +79,31 @@ export default function DateRangePicker({
 
   const [open, setOpen] = React.useState(false);
 
-  // Committed = applied range
-  const [committed, setCommitted] = React.useState<DateRange>({
-    from: addDays(new Date(), -7),
-    to: new Date(),
-  });
+  // ----------------------------------------------------------------------
+  // NUQS INTEGRATION (Updated Defaults)
+  // ----------------------------------------------------------------------
 
-  // Draft = currently selecting
+  // Default: Start of Today
+  const [from, setFrom] = useQueryState(
+    "from",
+    parseAsIsoDate.withDefault(startOfDay(new Date()))
+  );
+
+  // Default: End of Today
+  const [to, setTo] = useQueryState(
+    "to",
+    parseAsIsoDate.withDefault(endOfDay(new Date()))
+  );
+
+  // Derived committed state
+  const committed: DateRange = React.useMemo(() => ({
+    from: from ?? undefined,
+    to: to ?? undefined,
+  }), [from, to]);
+
+  // ----------------------------------------------------------------------
+  // LOCAL STATE (DRAFT)
+  // ----------------------------------------------------------------------
   const [draft, setDraft] = React.useState<DateRange>(committed);
 
   // Calendar month displayed
@@ -104,7 +115,7 @@ export default function DateRangePicker({
       setDraft(committed);
       setMonth(committed.from ?? new Date());
     }
-  }, [open, committed, maxSelectableDate]);
+  }, [open, committed]);
 
   // Keyboard shortcuts
   React.useEffect(() => {
@@ -131,18 +142,33 @@ export default function DateRangePicker({
     return () => window.removeEventListener("keydown", handler);
   }, [open, committed, maxSelectableDate]);
 
-  const label = committed?.from
-    ? committed?.to
+  const label = committed.from
+    ? committed.to
       ? `${format(committed.from, "LLL dd, y")} – ${format(
-          committed.to,
-          "LLL dd, y"
-        )}`
+        committed.to,
+        "LLL dd, y"
+      )}`
       : format(committed.from, "LLL dd, y")
     : "Pick date range";
 
   const disableFuture = { after: maxSelectableDate };
 
   const toDateInput = (d?: Date) => (d ? format(d, "yyyy-MM-dd") : "");
+
+  // ----------------------------------------------------------------------
+  // HANDLERS
+  // ----------------------------------------------------------------------
+
+  const handleApply = () => {
+    setFrom(draft?.from || null);
+    setTo(draft?.to || null);
+    setOpen(false);
+  };
+
+  const handleCancel = () => {
+    setDraft(committed);
+    setOpen(false);
+  };
 
   return (
     <div className={cn("grid gap-2", className)}>
@@ -158,22 +184,21 @@ export default function DateRangePicker({
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="w-[460px] p-0 rounded-xl border dark:border-gray-200/40 shadow-none bg-white/2 backdrop-blur-lg backdrop-saturate-200 ring-1 ring-white/6"
+          className="w-[460px] p-0 rounded-xl border border-gray-200 shadow-none bg-white/2 backdrop-blur-lg backdrop-saturate-200 ring-1 ring-white/6"
         >
           <div className="flex">
-            {/* ---------------------- LEFT PRESETS ---------------------- */}
-            <div className="w-[200px] border-r dark:border-gray-200/40 p-4 flex flex-col gap-3">
+            {/* LEFT PRESETS */}
+            <div className="w-[200px] border-r p-4 flex flex-col gap-3">
               <h4 className="text-xs font-semibold text-muted-foreground tracking-wider">
                 DATE RANGE
               </h4>
-
               <div className="flex flex-col gap-0">
                 {presets.map((p) => {
                   const active =
                     draft?.from?.toDateString() ===
-                      p.getRange().from?.toDateString() &&
+                    p.getRange().from?.toDateString() &&
                     draft?.to?.toDateString() ===
-                      p.getRange().to?.toDateString();
+                    p.getRange().to?.toDateString();
 
                   return (
                     <button
@@ -185,8 +210,8 @@ export default function DateRangePicker({
                         setDraft(r);
                       }}
                       className={cn(
-                        "flex items-center justify-between px-2 py-2 rounded-md hover:bg-gray-400/20 text-sm space-y-1 my-0.5",
-                        active && "bg-gray-400/40"
+                        "flex items-center justify-between px-2 py-2 rounded-md hover:bg-accent/40 text-sm",
+                        active && "bg-accent/20"
                       )}
                     >
                       <span>{p.label}</span>
@@ -198,19 +223,17 @@ export default function DateRangePicker({
                 })}
               </div>
             </div>
-            {/* ---------------------- RIGHT: CALENDAR ---------------------- */}
+            {/* RIGHT: CALENDAR */}
             <div className="p-1 w-[260px] py-0">
               <Calendar
                 mode="range"
                 selected={draft}
                 onSelect={(range) => {
                   if (!range) return;
-
                   if (range.to && range.to > maxSelectableDate)
                     range.to = maxSelectableDate;
                   if (range.from && range.from > maxSelectableDate)
                     range.from = maxSelectableDate;
-
                   setDraft(range);
                 }}
                 month={month}
@@ -220,79 +243,49 @@ export default function DateRangePicker({
               />
             </div>
           </div>
-          {/* ---------------------- CUSTOM RANGE + BUTTONS ---------------------- */}
-          <div className="pl-4 pr-2 py-2 border-t dark:border-gray-200/40">
+          {/* CUSTOM RANGE + BUTTONS */}
+          <div className="pl-4 pr-2 py-2 border-t">
             <h4 className="text-xs font-semibold text-muted-foreground tracking-wider">
               CUSTOM RANGE
             </h4>
-
             <div className="flex justify-between items-end mt-2 gap-2">
               {/* Inputs */}
               <div className="grid grid-cols-2 gap-1">
-                {/* Start */}
                 <div>
                   <Label className="text-xs">Start</Label>
                   <Input
                     type="date"
-                    className="dark:border-gray-200/20"
                     value={toDateInput(draft?.from)}
                     onChange={(e) => {
                       const d = e.target.value
                         ? new Date(`${e.target.value}T00:00:00`)
                         : undefined;
-
                       if (d && d > maxSelectableDate) return;
-
-                      setDraft({
-                        from: d,
-                        to: draft?.to,
-                      });
+                      setDraft({ from: d, to: draft?.to });
                     }}
                   />
                 </div>
-
-                {/* End */}
                 <div>
                   <Label className="text-xs">End</Label>
                   <Input
                     type="date"
-                    className="dark:border-gray-200/20"
                     value={toDateInput(draft?.to)}
                     onChange={(e) => {
                       const d = e.target.value
                         ? new Date(`${e.target.value}T00:00:00`)
                         : undefined;
-
                       if (d && d > maxSelectableDate) return;
-
-                      setDraft({
-                        from: draft?.from,
-                        to: d,
-                      });
+                      setDraft({ from: draft?.from, to: d });
                     }}
                   />
                 </div>
               </div>
-
               {/* Buttons */}
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  className="dark:border-gray-200/20"
-                  onClick={() => {
-                    setDraft(committed);
-                    setOpen(false);
-                  }}
-                >
+                <Button variant="ghost" onClick={handleCancel}>
                   Cancel
                 </Button>
-                <Button
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setCommitted(draft);
-                    setOpen(false);
-                  }}
-                >
+                <Button className="cursor-pointer" onClick={handleApply}>
                   Apply
                 </Button>
               </div>
